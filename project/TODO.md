@@ -1,7 +1,8 @@
 # TODO
 
-- [ ] Confirm how Render is returning `/admin` (404 vs served index.html) by checking Render logs.
-- [ ] Update `render.yaml` to add explicit SPA rewrite rules for `/admin` (e.g. `/admin`, `/admin/*`) plus catch-all.
-- [ ] Ensure build produces `dist/index.html` (confirm by checking build logs or running `npm run build` locally).
-- [ ] Deploy again and verify `https://anisheels.onrender.com/admin` loads the SPA.
+- [x] Fix Render static-site SPA deep-link routing so `/admin` and `/admin/*` load `index.html` instead of returning server 404.
+
+- [ ] Redeploy to Render.
+- [ ] Verify `/admin` redirects to `/admin/login` (or loads dashboard if authenticated).
+- [ ] Verify other deep links: `/admin/products`, `/admin/orders`, etc.
 
