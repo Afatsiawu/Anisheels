@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: anisheels
+    runtime: static
+    repo: https://github.com/Afatsiawu/Anisheels.git
+    branch: main
+    rootDir: project
+    buildCommand: npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
