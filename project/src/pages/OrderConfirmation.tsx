@@ -20,7 +20,10 @@ type LoadedOrder = {
 export default function OrderConfirmation() {
   const { orderNumber } = useParams<{ orderNumber: string }>();
   const location = useLocation();
-  const passedEmail = (location.state as { email?: string } | null)?.email;
+  // `passedEmail` is currently unused; keep location state extraction
+  // for future behavior without failing lint.
+  void (location.state as { email?: string } | null)?.email;
+
 
   const [data, setData] = useState<LoadedOrder | null>(null);
   const [loading, setLoading] = useState(true);

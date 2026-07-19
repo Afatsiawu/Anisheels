@@ -7,10 +7,10 @@ import {
   ShoppingBag,
   LogOut,
   Menu,
-  X,
   Plus,
   Store,
 } from 'lucide-react';
+
 import { useAdmin } from '../../context/AdminContext';
 
 const nav = [

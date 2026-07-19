@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import {
   ArrowLeft,
   Save,
   Loader2,
+
   AlertCircle,
   Trash2,
   ImagePlus,

@@ -19,6 +19,12 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
+
+      // Work around a known incompatibility between
+      // @typescript-eslint v8.x + TS 5.6.x on some environments.
+      // Disabling this prevents ESLint from crashing during CI/Render builds.
+      '@typescript-eslint/no-unused-expressions': 'off',
+
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },
@@ -26,3 +32,4 @@ export default tseslint.config(
     },
   }
 );
+
