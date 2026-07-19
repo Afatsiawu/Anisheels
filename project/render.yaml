@@ -8,6 +8,15 @@ services:
     buildCommand: npm run build
     staticPublishPath: dist
     routes:
+      # Ensure SPA deep links work (e.g. /admin/*)
+      - type: rewrite
+        source: /admin
+        destination: /index.html
+      - type: rewrite
+        source: /admin/*
+        destination: /index.html
+
+      # General catch-all for any other client-side routes
       - type: rewrite
         source: /*
         destination: /index.html
