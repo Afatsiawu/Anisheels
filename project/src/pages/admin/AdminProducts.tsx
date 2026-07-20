@@ -11,6 +11,8 @@ import {
   Package,
   Eye,
   EyeOff,
+  Share2,
+  Check,
 } from 'lucide-react';
 import {
   fetchAllProductsAdmin,
@@ -18,12 +20,19 @@ import {
   type ProductRow,
 } from '../../lib/products';
 
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+
+function shareLinkFor(id: number) {
+  return `${SUPABASE_URL}/functions/v1/og-product/${id}`;
+}
+
 export default function AdminProducts() {
   const [products, setProducts] = useState<ProductRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [confirmId, setConfirmId] = useState<number | null>(null);
+  const [copiedId, setCopiedId] = useState<number | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -50,6 +59,18 @@ export default function AdminProducts() {
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to delete product.');
       setConfirmId(null);
+    }
+  };
+
+  const handleShare = async (id: number) => {
+    const link = shareLinkFor(id);
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopiedId(id);
+      setTimeout(() => setCopiedId((cur) => (cur === id ? null : cur)), 1600);
+    } catch {
+      // Clipboard API unavailable (e.g. insecure context) — fall back to prompt
+      window.prompt('Copy this share link:', link);
     }
   };
 
@@ -203,6 +224,19 @@ export default function AdminProducts() {
                   </td>
                   <td className="px-5 py-4">
                     <div className="flex items-center justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleShare(p.id)}
+                        className="grid h-9 w-9 place-items-center rounded-full bg-fog text-ink/60 transition hover:bg-mint-light hover:text-mint-dark"
+                        aria-label={`Copy share link for ${p.name}`}
+                        title="Copy share link"
+                      >
+                        {copiedId === p.id ? (
+                          <Check size={15} strokeWidth={2} />
+                        ) : (
+                          <Share2 size={15} strokeWidth={1.8} />
+                        )}
+                      </button>
                       <Link
                         to={`/admin/products/${p.id}/edit`}
                         className="grid h-9 w-9 place-items-center rounded-full bg-mint-light text-mint-dark transition hover:bg-mint hover:text-white"
@@ -246,7 +280,22 @@ export default function AdminProducts() {
                   <p className="mt-1 font-heading text-sm font-semibold text-mint-dark">
                     GHS {Number(p.price).toLocaleString()}
                   </p>
-                  <div className="mt-2 flex items-center gap-2">
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleShare(p.id)}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-fog px-3 py-1.5 font-btn text-[10px] font-semibold uppercase tracking-[0.12em] text-ink/60"
+                    >
+                      {copiedId === p.id ? (
+                        <>
+                          <Check size={12} /> Copied
+                        </>
+                      ) : (
+                        <>
+                          <Share2 size={12} /> Share
+                        </>
+                      )}
+                    </button>
                     <Link
                       to={`/admin/products/${p.id}/edit`}
                       className="inline-flex items-center gap-1.5 rounded-full bg-mint-light px-3 py-1.5 font-btn text-[10px] font-semibold uppercase tracking-[0.12em] text-mint-dark"

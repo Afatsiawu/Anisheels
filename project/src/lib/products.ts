@@ -51,6 +51,21 @@ function toStore(p: ProductRow): StoreProduct {
   };
 }
 
+// Add this function to your existing lib/products.ts (anywhere after toStore is defined)
+
+export async function fetchProductById(id: number): Promise<StoreProduct | null> {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('id', id)
+    .eq('is_active', true)
+    .maybeSingle();
+
+  if (error) throw error;
+  if (!data) return null;
+  return toStore(data as ProductRow);
+}
+
 // Fetch all active products for the storefront
 export async function fetchStoreProducts(): Promise<StoreProduct[]> {
   const { data, error } = await supabase

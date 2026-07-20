@@ -13,6 +13,7 @@ import { AdminProvider } from './context/AdminContext';
 import Home from './pages/Home';
 
 const Shop = lazy(() => import('./pages/Shop'));
+const ProductPage = lazy(() => import('./pages/ProductPage'));
 const Cart = lazy(() => import('./pages/Cart'));
 const Checkout = lazy(() => import('./pages/Checkout'));
 const OrderConfirmation = lazy(() => import('./pages/OrderConfirmation'));
@@ -65,6 +66,16 @@ function App() {
                     <StoreShell>
                       <Suspense fallback={<PageLoader />}>
                         <Shop />
+                      </Suspense>
+                    </StoreShell>
+                  }
+                />
+                <Route
+                  path="/product/:id"
+                  element={
+                    <StoreShell>
+                      <Suspense fallback={<PageLoader />}>
+                        <ProductPage />
                       </Suspense>
                     </StoreShell>
                   }
