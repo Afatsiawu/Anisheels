@@ -20,10 +20,10 @@ import {
   type ProductRow,
 } from '../../lib/products';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+const OG_SERVER_URL = 'https://server-ha3v.onrender.com';
 
 function shareLinkFor(id: number) {
-  return `${SUPABASE_URL}/functions/v1/og-product/${id}`;
+  return `${OG_SERVER_URL}/product/${id}`;
 }
 
 export default function AdminProducts() {
