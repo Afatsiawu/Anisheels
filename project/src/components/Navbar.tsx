@@ -8,7 +8,6 @@ import {
   User,
   Menu,
   X,
-  Truck,
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
@@ -59,14 +58,6 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Announcement bar */}
-      <div className="relative z-50 flex items-center justify-center gap-2 bg-mint-dark px-4 py-2.5 text-center font-btn text-[11px] font-medium uppercase tracking-[0.22em] text-mint-light">
-        <Truck size={14} strokeWidth={1.8} className="text-gold" />
-        <span>Free Delivery on Orders Above GHS 300</span>
-        <span className="hidden sm:inline">·</span>
-        <span className="hidden sm:inline text-gold/90">Worldwide Express Shipping</span>
-      </div>
-
       {/* Navbar */}
       <header
         className={`sticky top-0 z-40 transition-all duration-500 ${
