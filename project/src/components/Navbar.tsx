@@ -68,7 +68,7 @@ export default function Navbar() {
               : 'bg-cream/80 backdrop-blur-sm'
         }`}
       >
-        <nav className="container-luxe flex items-center justify-between py-4">
+        <nav className="container-luxe flex items-center justify-between pb-3 pt-5">
           {/* Logo */}
           <Link
             to="/"
