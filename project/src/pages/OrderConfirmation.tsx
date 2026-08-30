@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -9,7 +9,9 @@ import {
   ArrowRight,
   Loader2,
   AlertCircle,
+  Download,
 } from 'lucide-react';
+import html2canvas from 'html2canvas';
 import { supabase, type OrderRow, type OrderItemRow } from '../lib/supabase';
 
 type LoadedOrder = {
@@ -24,10 +26,11 @@ export default function OrderConfirmation() {
   // for future behavior without failing lint.
   void (location.state as { email?: string } | null)?.email;
 
-
+  const cardRef = useRef<HTMLDivElement>(null);
   const [data, setData] = useState<LoadedOrder | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -72,6 +75,29 @@ export default function OrderConfirmation() {
       active = false;
     };
   }, [orderNumber]);
+
+  const handleDownloadCard = async () => {
+    if (!cardRef.current) return;
+    setDownloading(true);
+    try {
+      const canvas = await html2canvas(cardRef.current, {
+        backgroundColor: '#ffffff',
+        scale: 2,
+        logging: false,
+      });
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL('image/png');
+      link.download = `order-${orderNumber}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (e) {
+      console.error('Failed to download card:', e);
+      setError('Failed to download order card. Please try again.');
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -272,10 +298,19 @@ export default function OrderConfirmation() {
 
         {/* Summary */}
         <aside className="lg:sticky lg:top-28 lg:self-start">
-          <div className="rounded-4xl bg-white p-6 shadow-luxe-sm sm:p-7">
+          <div ref={cardRef} className="rounded-4xl bg-white p-6 shadow-luxe-sm sm:p-7">
             <h2 className="font-heading text-lg font-semibold text-ink">
               Order Details
             </h2>
+
+            <button
+              onClick={handleDownloadCard}
+              disabled={downloading}
+              className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-mint/30 bg-mint-light/50 px-4 py-2.5 font-body text-sm font-semibold text-mint-dark transition hover:bg-mint-light disabled:opacity-50"
+            >
+              <Download size={16} strokeWidth={2} />
+              {downloading ? 'Downloading…' : 'Download as PNG'}
+            </button>
 
             <div className="mt-5 space-y-2 font-body text-sm">
               <Row label="Order number" value={order.order_number} />
