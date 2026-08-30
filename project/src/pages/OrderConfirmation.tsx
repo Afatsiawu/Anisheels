@@ -105,6 +105,29 @@ export default function OrderConfirmation() {
   const estimated = new Date(order.created_at);
   estimated.setDate(estimated.getDate() + 4);
 
+  const allStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered'] as const;
+  const isCancelled = order.status === 'cancelled';
+
+  // Map display labels to statuses
+  const statusSteps = [
+    { key: 'pending', Icon: CheckCircle2, label: 'Pending' },
+    { key: 'confirmed', Icon: CheckCircle2, label: 'Confirmed' },
+    { key: 'processing', Icon: Package, label: 'Processing' },
+    { key: 'shipped', Icon: Truck, label: 'Shipped' },
+    { key: 'delivered', Icon: Mail, label: 'Delivered' },
+  ];
+
+  // Get the current step index based on actual order status
+  const currentStatusIndex = allStatuses.includes(order.status as (typeof allStatuses)[number])
+    ? allStatuses.indexOf(order.status as (typeof allStatuses)[number])
+    : 0;
+
+  const formatStatus = (value: string) =>
+    value
+      .split('_')
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(' ');
+
   return (
     <div className="bg-cream pb-20 pt-10">
       {/* Hero */}
@@ -126,7 +149,9 @@ export default function OrderConfirmation() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
           >
-            Thank You{order.full_name ? `, ${order.full_name.split(' ')[0]}` : ''}!
+            {isCancelled
+              ? 'Order Cancelled'
+              : `Thank You${order.full_name ? `, ${order.full_name.split(' ')[0]}` : ''}!`}
           </motion.h1>
           <motion.p
             className="mx-auto mt-3 max-w-md font-body text-sm text-mint-dark/80"
@@ -134,8 +159,11 @@ export default function OrderConfirmation() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
           >
-            Your order is confirmed. A receipt is on its way to{' '}
-            <span className="font-semibold">{order.email}</span>.
+            {isCancelled
+              ? 'This order has been cancelled and no longer active for delivery.'
+              : `Your order is ${formatStatus(order.status)}. A receipt is on its way to `}
+            {!isCancelled && <span className="font-semibold">{order.email}</span>}
+            {!isCancelled && '.'}
           </motion.p>
           <motion.div
             className="mx-auto mt-6 inline-flex items-center gap-2 rounded-full bg-white/70 px-5 py-2.5 font-btn text-xs font-semibold uppercase tracking-[0.18em] text-mint-dark backdrop-blur"
@@ -157,49 +185,58 @@ export default function OrderConfirmation() {
               Order Status
             </h2>
             <div className="mt-5 flex items-center gap-2 sm:gap-4">
-              {[
-                { Icon: CheckCircle2, label: 'Confirmed', active: true },
-                { Icon: Package, label: 'Packed', active: false },
-                { Icon: Truck, label: 'Shipped', active: false },
-                { Icon: Mail, label: 'Delivered', active: false },
-              ].map((step, i, arr) => (
-                <div key={step.label} className="flex flex-1 items-center gap-2 sm:gap-4">
-                  <div className="flex flex-col items-center gap-2">
-                    <div
-                      className={`grid h-11 w-11 place-items-center rounded-full transition ${
-                        step.active
-                          ? 'bg-mint-dark text-white shadow-luxe-sm'
-                          : 'bg-fog text-ink/40'
-                      }`}
-                    >
-                      <step.Icon size={18} strokeWidth={1.7} />
+              {statusSteps.map((step, i, arr) => {
+                const isActive = isCancelled ? false : i <= currentStatusIndex;
+                const isCurrent = !isCancelled && i === currentStatusIndex;
+                return (
+                  <div key={step.key} className="flex flex-1 items-center gap-2 sm:gap-4">
+                    <div className="flex flex-col items-center gap-2">
+                      <div
+                        className={`grid h-11 w-11 place-items-center rounded-full transition ${
+                          isActive
+                            ? isCurrent
+                              ? 'bg-mint-dark text-white shadow-luxe-sm'
+                              : 'bg-mint text-white'
+                            : 'bg-fog text-ink/40'
+                        }`}
+                      >
+                        <step.Icon size={18} strokeWidth={1.7} />
+                      </div>
+                      <span className="font-btn text-[10px] uppercase tracking-[0.14em] text-ink/60">
+                        {step.label}
+                      </span>
                     </div>
-                    <span className="font-btn text-[10px] uppercase tracking-[0.14em] text-ink/60">
-                      {step.label}
-                    </span>
+                    {i < arr.length - 1 && (
+                      <div className="h-px flex-1 bg-mint/25">
+                        <motion.div
+                          className="h-full bg-mint-dark"
+                          initial={{ width: isActive ? '100%' : '0%' }}
+                          animate={{ width: isActive ? '100%' : '0%' }}
+                        />
+                      </div>
+                    )}
                   </div>
-                  {i < arr.length - 1 && (
-                    <div className="h-px flex-1 bg-mint/25">
-                      <motion.div
-                        className="h-full bg-mint-dark"
-                        initial={{ width: i === 0 ? '40%' : '0%' }}
-                        animate={{ width: i === 0 ? '40%' : '0%' }}
-                      />
-                    </div>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
-            <p className="mt-5 rounded-2xl bg-mint-light px-4 py-3 font-body text-xs text-mint-dark">
-              Estimated delivery:{' '}
-              <span className="font-semibold">
-                {estimated.toLocaleDateString('en-GB', {
-                  weekday: 'long',
-                  day: 'numeric',
-                  month: 'long',
-                })}
-              </span>
-            </p>
+            {isCancelled ? (
+              <p className="mt-5 rounded-2xl bg-red-50 px-4 py-3 font-body text-xs text-red-600">
+                This order has been cancelled. No further delivery updates will be sent.
+              </p>
+            ) : (
+              <p className="mt-5 rounded-2xl bg-mint-light px-4 py-3 font-body text-xs text-mint-dark">
+                Current status:{' '}
+                <span className="font-semibold">{formatStatus(order.status)}</span>
+                {' · '}Estimated delivery:{' '}
+                <span className="font-semibold">
+                  {estimated.toLocaleDateString('en-GB', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long',
+                  })}
+                </span>
+              </p>
+            )}
           </section>
 
           {/* Items */}
@@ -244,7 +281,11 @@ export default function OrderConfirmation() {
               <Row label="Order number" value={order.order_number} />
               <Row label="Date" value={new Date(order.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} />
               <Row label="Email" value={order.email} />
-              <Row label="Payment" value="Confirmed" valueClass="text-mint-dark font-semibold" />
+              <Row
+                label="Status"
+                value={isCancelled ? 'Cancelled' : formatStatus(order.status)}
+                valueClass={isCancelled ? 'text-red-600 font-semibold' : 'text-mint-dark font-semibold'}
+              />
             </div>
 
             <div className="my-5 h-px bg-mint/15" />

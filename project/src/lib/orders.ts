@@ -55,7 +55,7 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResu
       discount: input.discount,
       total: input.total,
       promo_code: input.promo?.code ?? null,
-      status: 'confirmed',
+      status: 'pending',
     })
     .select('id, order_number')
     .single();
