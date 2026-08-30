@@ -266,7 +266,7 @@ export default function Checkout() {
                     value={form.address}
                     onChange={(e) => update('address', e.target.value)}
                     className={inputClass('address')}
-                    placeholder="12 Oxford Street, Osu"
+                    placeholder="12 weija Street, Kasoa"
                   />
                   {errors.address && (
                     <p className="mt-1 font-body text-xs text-red-500">{errors.address}</p>

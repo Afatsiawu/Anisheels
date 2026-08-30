@@ -96,7 +96,7 @@ export default function Footer() {
                 <Phone size={16} strokeWidth={1.7} /> +233 20 000 0000
               </a>
               <p className="flex items-center gap-3">
-                <MapPin size={16} strokeWidth={1.7} /> Osu, Accra — Ghana
+                <MapPin size={16} strokeWidth={1.7} /> Kasoa, Accra — Ghana
               </p>
             </div>
 
