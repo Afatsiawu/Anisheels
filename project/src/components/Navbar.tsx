@@ -56,66 +56,104 @@ export default function Navbar() {
   const textColor = overHero ? 'text-white' : 'text-ink';
   const logoColor = overHero ? 'text-white' : 'text-mint-dark';
 
+  const isActiveLink = (to: string) => {
+    if (to === '/') return location.pathname === '/';
+    if (to.startsWith('/shop')) return location.pathname.startsWith('/shop');
+    if (to.startsWith('/#')) return location.pathname === '/' && location.hash === to.slice(1);
+    return false;
+  };
+
   return (
     <>
-      {/* Navbar */}
       <header
         className={`sticky top-0 z-40 transition-all duration-500 ${
           scrolled
-            ? 'glass shadow-luxe-sm'
+            ? 'border-b border-mint-dark/10 bg-[#fffdfa]/80 shadow-[0_12px_40px_rgba(35,73,59,0.12)] backdrop-blur-xl'
             : overHero
               ? 'bg-transparent'
-              : 'bg-cream/80 backdrop-blur-sm'
+              : 'border-b border-mint-dark/5 bg-[#fffdfa]/75 backdrop-blur-xl'
         }`}
       >
-        <nav className="container-luxe flex items-center justify-between pb-3 pt-5">
-          {/* Logo */}
+        <nav className="container-luxe flex items-center justify-between py-3 sm:py-4">
           <Link
             to="/"
-            className={`font-heading text-xl font-bold tracking-tight ${logoColor} sm:text-2xl`}
+            className={`group relative inline-flex items-center gap-3 ${logoColor}`}
             aria-label="ANISHEELS Collection home"
           >
-            ANISHEELS
-            <span className="block text-[9px] font-medium uppercase tracking-[0.45em] text-gold">
-              Collection
+            <span className="grid h-11 w-11 place-items-center rounded-full border border-current/15 bg-white/10 text-[10px] font-btn font-semibold uppercase tracking-[0.24em] shadow-soft transition group-hover:scale-105 group-hover:border-gold/60 group-hover:text-gold">
+              A
+            </span>
+            <span className="leading-none">
+              <span className="font-heading text-xl font-bold tracking-[0.08em] sm:text-2xl">
+                ANISHEELS
+              </span>
+              <span className="mt-1 block text-[9px] font-medium uppercase tracking-[0.46em] text-gold">
+                Collection
+              </span>
             </span>
           </Link>
 
-          {/* Desktop menu */}
-          <ul className={`hidden items-center gap-8 lg:flex ${textColor}`}>
-            {navLinks.map((l) => (
-              <li key={l.label}>
-                <Link
-                  to={l.to}
-                  className="group relative font-btn text-[12px] font-medium uppercase tracking-[0.16em] transition-colors hover:text-gold"
-                >
-                  {l.label}
-                  <span className="absolute -bottom-1 left-0 h-px w-0 bg-gold transition-all duration-300 group-hover:w-full" />
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <div className={`hidden items-center rounded-full border px-3 py-2 shadow-[0_8px_24px_rgba(35,73,59,0.08)] lg:flex ${
+            scrolled || !overHero
+              ? 'border-mint-dark/10 bg-white/70'
+              : 'border-white/15 bg-white/5 backdrop-blur-sm'
+          }`}>
+            <ul className={`flex items-center gap-1 ${textColor}`}>
+              {navLinks.map((l) => {
+                const active = isActiveLink(l.to);
 
-          {/* Icons */}
-          <div className={`flex items-center gap-1 sm:gap-2 ${textColor}`}>
-            {icons.slice(0, 2).map(({ Icon, label }) => (
-              <button
-                key={label}
-                type="button"
-                aria-label={label}
-                className="grid h-10 w-10 place-items-center rounded-full transition-all hover:bg-white/20 hover:text-gold"
-              >
-                <Icon size={19} strokeWidth={1.7} />
-              </button>
-            ))}
-            {/* Cart icon with badge */}
+                return (
+                  <li key={l.label}>
+                    <Link
+                      to={l.to}
+                      className={`group relative rounded-full px-3.5 py-2.5 font-btn text-[11px] font-medium uppercase tracking-[0.16em] transition-all duration-300 ${
+                        active
+                          ? 'bg-mint-light text-mint-dark shadow-soft'
+                          : 'text-current hover:bg-white/20 hover:text-gold'
+                      }`}
+                    >
+                      {l.label}
+                      <span
+                        className={`absolute inset-x-2.5 -bottom-0.5 h-px rounded-full transition-all duration-300 ${
+                          active ? 'bg-gold' : 'bg-gold/0 group-hover:bg-gold/80'
+                        }`}
+                      />
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+
+          <div className={`flex items-center gap-1.5 sm:gap-2 ${textColor}`}>
+            <div className={`hidden items-center gap-1 rounded-full border p-1 sm:flex ${
+              scrolled || !overHero
+                ? 'border-mint-dark/10 bg-white/70'
+                : 'border-white/15 bg-white/5 backdrop-blur-sm'
+            }`}>
+              {icons.slice(0, 2).map(({ Icon, label }) => (
+                <button
+                  key={label}
+                  type="button"
+                  aria-label={label}
+                  className="grid h-10 w-10 place-items-center rounded-full transition-all hover:bg-mint-light hover:text-mint-dark"
+                >
+                  <Icon size={18} strokeWidth={1.8} />
+                </button>
+              ))}
+            </div>
+
             <button
               type="button"
               aria-label={`Cart, ${count} items`}
               onClick={openCart}
-              className="relative grid h-10 w-10 place-items-center rounded-full transition-all hover:bg-white/20 hover:text-gold"
+              className={`relative grid h-11 w-11 place-items-center rounded-full border transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_24px_rgba(201,162,39,0.2)] ${
+                scrolled || !overHero
+                  ? 'border-mint-dark/10 bg-white/80 text-ink hover:border-gold/50 hover:text-gold'
+                  : 'border-white/15 bg-white/10 text-white hover:bg-white/20'
+              }`}
             >
-              <ShoppingBag size={19} strokeWidth={1.7} />
+              <ShoppingBag size={18} strokeWidth={1.8} />
               {count > 0 && (
                 <motion.span
                   key={count}
@@ -127,20 +165,30 @@ export default function Navbar() {
                 </motion.span>
               )}
             </button>
+
             <button
               type="button"
               aria-label="Account"
-              className="grid h-10 w-10 place-items-center rounded-full transition-all hover:bg-white/20 hover:text-gold"
+              className={`grid h-11 w-11 place-items-center rounded-full border transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_24px_rgba(35,73,59,0.12)] ${
+                scrolled || !overHero
+                  ? 'border-mint-dark/10 bg-white/80 text-ink hover:border-mint-dark/20 hover:text-mint-dark'
+                  : 'border-white/15 bg-white/10 text-white hover:bg-white/20'
+              }`}
             >
-              <User size={19} strokeWidth={1.7} />
+              <User size={18} strokeWidth={1.8} />
             </button>
+
             <button
               type="button"
               aria-label="Open menu"
               onClick={() => setOpen(true)}
-              className={`ml-1 grid h-10 w-10 place-items-center rounded-full transition-all hover:bg-white/20 lg:hidden ${textColor}`}
+              className={`ml-1 grid h-11 w-11 place-items-center rounded-full border transition-all duration-300 lg:hidden ${
+                scrolled || !overHero
+                  ? 'border-mint-dark/10 bg-white/80 text-ink hover:border-gold/50 hover:text-gold'
+                  : 'border-white/15 bg-white/10 text-white hover:bg-white/20'
+              }`}
             >
-              <Menu size={22} strokeWidth={1.7} />
+              <Menu size={20} strokeWidth={1.8} />
             </button>
           </div>
         </nav>
